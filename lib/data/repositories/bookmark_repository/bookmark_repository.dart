@@ -12,7 +12,6 @@ class BookMarkRepository {
 
   List<Product> getBookMarks() {
     List<Product> bookMarks = _bookmarks.values.toList();
-    log(bookMarks.length.toString());
     return bookMarks;
   }
 

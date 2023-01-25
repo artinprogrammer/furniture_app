@@ -29,4 +29,14 @@ class DeleteProductFromShoppingCart extends ShoppingCartEvent {
   List<Object> get props => [productToDelete];
 }
 
+class UpdateQuantity extends ShoppingCartEvent{
+  final ShoppingProduct product;
+  final int value;
+
+  const UpdateQuantity(this.product, this.value);
+
+  @override
+  List<Object> get props => [value,product];
+}
+
 class DeleteShoppingCart extends ShoppingCartEvent {}

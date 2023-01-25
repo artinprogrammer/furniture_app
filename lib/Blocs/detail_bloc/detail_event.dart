@@ -15,3 +15,6 @@ class CurrentProductIdChanged extends DetailEvent {
   @override
   List<Object> get props => [newId];
 }
+class AddToBookMarksEvent extends DetailEvent{}
+
+class DeleteFromBookMarksEvent extends DetailEvent{}

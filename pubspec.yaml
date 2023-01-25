@@ -20,6 +20,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   rxdart:
   fluid_bottom_nav_bar: ^1.4.0
+  flutter_spinkit: ^5.1.0
   
 dev_dependencies:
   flutter_test:

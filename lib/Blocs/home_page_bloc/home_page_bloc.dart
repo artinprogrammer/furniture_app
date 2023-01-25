@@ -13,12 +13,6 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
         super(const HomePageState()) {
     on<LoadHomeItemsEvent>(_loadHomeItems);
     on<CategoryChanged>(_changeCategory);
-    on<SearchQueryChanged>(
-      _search,
-      transformer: (events, mapper) => events
-          .debounceTime(const Duration(milliseconds: 300))
-          .switchMap(mapper),
-    );
     on<SortOptionChanged>(_changeSortOption);
   }
   final HomeRepository _homeRepository;
@@ -36,25 +30,6 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
   void _changeCategory(CategoryChanged event, Emitter<HomePageState> emit) {
     emit(state.copyWith(newCategory: event.category));
-  }
-
-  Future<void> _search(
-      SearchQueryChanged event, Emitter<HomePageState> emit) async {
-    emit(state.copyWith(newStatus: HomeStatus.loading));
-    try {
-      List<Product> products = await _homeRepository.getHomeProducts();
-      if (event.query == "") {
-        emit(state.copyWith(
-            newStatus: HomeStatus.loaded, newProducts: products));
-      }
-      List<Product> searchedProducts = products
-          .where((product) => product.title.contains(event.query))
-          .toList();
-      emit(state.copyWith(
-          newStatus: HomeStatus.loaded, newProducts: searchedProducts));
-    } catch (e) {
-      emit(state.copyWith(newStatus: HomeStatus.failure));
-    }
   }
 
   Future<void> _changeSortOption(SortOptionChanged event, Emitter<HomePageState> emit) async{

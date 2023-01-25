@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:furniture_app/data/models/product.dart';
 import 'package:furniture_app/data/repositories/shopping_repository/shopping_repository.dart';
 
 import '../../data/models/shopping_product.dart';
@@ -18,6 +15,7 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
     on<LoadShoppingCart>(_loadShoppingCart);
     on<AddNewProductToShoppingCart>(_addProduct);
     on<DeleteProductFromShoppingCart>(_deleteProduct);
+    on<UpdateQuantity>(_updateQuantity);
     on<DeleteShoppingCart>(_deleteShoppingCart);
   }
   final ShoppingRepository _shoppingRepository;
@@ -54,20 +52,35 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
 
   Future<void> _addProduct(AddNewProductToShoppingCart event,
       Emitter<ShoppingCartState> emit) async {
-    log("add");
-    await _shoppingRepository.addProduct(event.newProduct);
-    add(LoadShoppingCart());
+    emit(state.copyWith(newStatus: ShoppingCartStatus.loading));
+    Future.delayed(const Duration(milliseconds: 300)).then((value) async {
+      await _shoppingRepository.addProduct(event.newProduct);
+      add(LoadShoppingCart());
+    });
   }
 
   Future<void> _deleteProduct(DeleteProductFromShoppingCart event,
       Emitter<ShoppingCartState> emit) async {
-    await _shoppingRepository.deleteProduct(event.productToDelete.key);
+    emit(state.copyWith(newStatus: ShoppingCartStatus.loading));
+    Future.delayed(const Duration(milliseconds: 300)).then((value) async {
+      await _shoppingRepository.deleteProduct(event.productToDelete);
+      add(LoadShoppingCart());
+    });
+  }
+
+  Future<void> _updateQuantity(
+      UpdateQuantity event, Emitter<ShoppingCartState> emit) async {
+    emit(state.copyWith(newStatus: ShoppingCartStatus.loading));
+    Future.delayed(const Duration(milliseconds: 300)).then((value) async {
+      await _shoppingRepository.updateQuantity(event.product, event.value);
+      add(LoadShoppingCart());
+    });
   }
 
   Future<void> _deleteShoppingCart(
       DeleteShoppingCart event, Emitter<ShoppingCartState> emit) async {
     for (var i = 0; i < state.shoppingCartList.length; i++) {
-      await _shoppingRepository.deleteProduct(state.shoppingCartList[i].id);
+      await _shoppingRepository.deleteProduct(state.shoppingCartList[i]);
     }
     add(LoadShoppingCart());
   }

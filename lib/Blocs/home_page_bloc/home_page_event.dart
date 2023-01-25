@@ -18,15 +18,6 @@ class CategoryChanged extends HomePageEvent {
   List<Object> get props => [category];
 }
 
-class SearchQueryChanged extends HomePageEvent {
-  final String query;
-
-  const SearchQueryChanged(this.query);
-
-  @override
-  List<Object> get props => [query];
-}
-
 class SortOptionChanged extends HomePageEvent {
   final SortOption sortOption;
 

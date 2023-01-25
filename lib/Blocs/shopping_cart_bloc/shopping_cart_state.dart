@@ -35,5 +35,5 @@ class ShoppingCartState extends Equatable {
 
   @override
   List<Object> get props =>
-      [status, shoppingCartList, recentAddedProducts, totalPrice, tax];
+      [status, shoppingCartList, recentAddedProducts, totalPrice, tax,subTotal];
 }

@@ -4,11 +4,50 @@ import 'package:furniture_app/Blocs/home_page_bloc/home_page_bloc.dart';
 import 'package:furniture_app/Blocs/shopping_cart_bloc/shopping_cart_bloc.dart';
 import 'package:furniture_app/constants/color_constants.dart';
 import 'package:furniture_app/constants/string_constant.dart';
+import 'package:furniture_app/presentation/search_page/search_page.dart';
 
 import '../../core/widgets/productItem.dart';
+import '../../data/provider/api_provider.dart';
+import '../../data/repositories/bookmark_repository/bookmark_repository.dart';
+import '../../data/repositories/home_repository/home_repostiory.dart';
+import '../../data/repositories/shopping_repository/shopping_repository.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  Route<void> route() {
+    return MaterialPageRoute(
+        builder: (context) => MultiRepositoryProvider(
+              providers: [
+                RepositoryProvider(
+                    create: (context) => HomeRepository(ProductsApiProvider())),
+                RepositoryProvider(create: (context) => BookMarkRepository()),
+                RepositoryProvider(create: (context) => ShoppingRepository()),
+              ],
+              child: MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => HomePageBloc(
+                        homeRepository:
+                            RepositoryProvider.of<HomeRepository>(context))
+                      ..add(LoadHomeItemsEvent()),
+                  ),
+                  BlocProvider(
+                      create: (context) => ShoppingCartBloc(
+                          shoppingRepository:
+                              RepositoryProvider.of<ShoppingRepository>(
+                                  context))
+                        ..add(RegisterShoppingCart()))
+                ],
+                child: const SafeArea(
+                  child: Scaffold(
+                    backgroundColor: ColorConstants.backgroundColor,
+                    body: HomeScreen(),
+                  ),
+                ),
+              ),
+            ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,22 +92,27 @@ class HomeScreen extends StatelessWidget {
                     decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.all(Radius.circular(16))),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.search,
-                            color: ColorConstants.textColor,
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            StringConstant.search,
-                            style: textTheme.subtitle1,
-                          )
-                        ],
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(SearchPage().route());
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.search,
+                              color: ColorConstants.textColor,
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Text(
+                              StringConstant.search,
+                              style: textTheme.subtitle1,
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
